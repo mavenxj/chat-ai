@@ -1,7 +1,8 @@
 import openai
 import time
 import streamlit as st
-from langchain.llms import OpenAI
+#from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 
 import pinecone_datasets
