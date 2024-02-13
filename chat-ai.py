@@ -2,12 +2,14 @@ import openai
 import time
 import streamlit as st
 from langchain.llms import OpenAI
+from langchain.embeddings.openai import OpenAIEmbeddings
 
 st.title('AI Chatbot')
 openai_api_key = st.sidebar.text_input('OpenAI API Key')
 
 limit = 3750
 openai.api_key = openai_api_key
+model_name = 'text-embedding-ada-002'
 
 def retrieve(query):
     res = openai.Embedding.create(
