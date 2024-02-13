@@ -14,7 +14,7 @@ model_name = 'gpt-3.5-turbo-0613'
 def retrieve(query):
     res = openai.Embedding.create(
         input=[query],
-        engine=model_name
+        engine='text-embedding-ada-002'
     )
 
     # retrieve from Pinecone
@@ -66,7 +66,6 @@ def retrieve(query):
 def complete(prompt):
     # instructions
     sys_prompt = "You are a helpful assistant that always answers questions."
-    # query text-davinci-003
     res = openai.ChatCompletion.create(
         model=model_name,
         messages=[
