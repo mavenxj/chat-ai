@@ -4,8 +4,51 @@ import streamlit as st
 from langchain.llms import OpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 
+import pinecone_datasets
+dataset = pinecone_datasets.load_dataset('wikipedia-simple-text-embedding-ada-002-100K')
+
+# we drop sparse_values as they are not needed for this example
+dataset.documents.drop(['metadata'], axis=1, inplace=True)
+dataset.documents.rename(columns={'blob': 'metadata'}, inplace=True)
+
+import os
+from pinecone import Pinecone
+from pinecone import ServerlessSpec, PodSpec
+import time
+
 st.title('AI Chatbot')
 openai_api_key = st.sidebar.text_input('OpenAI API Key')
+pine_api_key = st.sidebar.text_input('Pinecone API Key')
+
+# configure client
+pc = Pinecone(api_key=pine_api_key)
+environment = 'gcp-starter'
+use_serverless = False
+
+if use_serverless:
+    spec = ServerlessSpec(cloud='aws', region='us-west-2')
+else:
+    # if not using a starter index, you should specify a pod_type too
+    spec = PodSpec(environment=environment)
+
+# check for and delete index if already exists
+index_name = 'index-llm'
+if index_name in pc.list_indexes().names():
+    pc.delete_index(index_name)
+
+# we create a new index
+pc.create_index(
+        index_name,
+        dimension=1536,  # dimensionality of text-embedding-ada-002
+        metric='cosine',
+        spec=spec
+    )
+
+# wait for index to be initialized
+while not pc.describe_index(index_name).status['ready']:
+    time.sleep(1)
+
+index = pc.Index(index_name)
 
 limit = 3750
 openai.api_key = openai_api_key
@@ -89,3 +132,5 @@ with st.form('my_form'):
     st.warning('Please enter your OpenAI API key!', icon='⚠')
   if submitted and openai_api_key.startswith('sk-'):
     generate_response(text)
+
+pc.delete_index(index_name)
