@@ -9,7 +9,7 @@ openai_api_key = st.sidebar.text_input('OpenAI API Key')
 
 limit = 3750
 openai.api_key = openai_api_key
-model_name = 'text-embedding-ada-002'
+model_name = 'gpt-3.5-turbo-0613'
 
 def retrieve(query):
     res = openai.Embedding.create(
@@ -68,7 +68,7 @@ def complete(prompt):
     sys_prompt = "You are a helpful assistant that always answers questions."
     # query text-davinci-003
     res = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo-0613',
+        model=model_name,
         messages=[
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": prompt}
