@@ -3,6 +3,5 @@ google.generativeai
 pillow
 pathlib
 gtts
-time
 keyboard
 psutil
