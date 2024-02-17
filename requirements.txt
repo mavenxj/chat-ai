@@ -1,4 +1,11 @@
 streamlit>=1.26.0
-langchain==0.1.1
-langchain-community==0.0.13
-openai==0.27.7
+google.generativeai
+os
+io
+PIL.Image
+urllib.request
+pathlib
+gtts
+time
+keyboard
+psutil
