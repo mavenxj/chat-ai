@@ -19,7 +19,7 @@ def main():
     os.environ['GOOGLE_API_KEY'] = GOOGLE_API_KEY
 
     if not os.getenv('GOOGLE_API_KEY', '').startswith("AI"):
-        st.warning("Note: Enter your Google API key for this chat.")
+        st.warning("Note: Enter your Google API key for this chat. https://ai.google.dev/pricing")
 
     # Initialize the GenAI
     genai.configure(api_key=GOOGLE_API_KEY)
