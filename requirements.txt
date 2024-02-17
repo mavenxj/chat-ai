@@ -1,7 +1,6 @@
 streamlit>=1.26.0
 google.generativeai
 pillow
-urllib.request
 pathlib
 gtts
 time
