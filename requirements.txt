@@ -1,8 +1,6 @@
 streamlit>=1.26.0
 google.generativeai
-os
-io
-PIL.Image
+PIL
 urllib.request
 pathlib
 gtts
