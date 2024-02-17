@@ -42,16 +42,6 @@ def main():
     elif not question == "":
         get_response_text(question)
 
-    #exit app
-    exit_app = st.sidebar.button("Logout")
-    if exit_app:
-        # Give a bit of delay for user experience
-        time.sleep(3)
-        # Terminate streamlit python process
-        pid = os.getpid()
-        p = psutil.Process(pid)
-        p.terminate()
-
 def get_response_image(query, image):
     model = genai.GenerativeModel('gemini-pro-vision')
     response = model.generate_content([query, image], stream=True)
