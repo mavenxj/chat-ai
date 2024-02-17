@@ -42,8 +42,8 @@ def main():
     elif not question == "":
         get_response_text(question)
 
+    #exit app
     exit_app = st.sidebar.button("Logout")
-
     if exit_app:
         # Give a bit of delay for user experience
         time.sleep(3)
