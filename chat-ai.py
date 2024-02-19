@@ -27,11 +27,11 @@ def main():
         genai.configure(api_key=GOOGLE_API_KEY)
         
         st.write("Enter your query")
-        question = st.text_input(key="K-text")
+        question = st.text_input("",key="K-text")
 
         img = ""
         st.write("Enter image URL")
-        image_url = st.text_input(key="K-img")
+        image_url = st.text_input("",key="K-img")
 
         #read image file
         if image_url:
