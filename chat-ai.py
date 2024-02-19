@@ -71,7 +71,7 @@ def get_response_text(query):
 #text to speech
 def TTS(res):
     # remove special characters before speech conversion
-    spl_char = '[^a-zA-Z0-9 \n\.]'
+    spl_char = '[^a-zA-Z0-9%&$ \n\.]'
     clean_text = re.sub(pattern=spl_char, repl="", string=res)
 
     tts = gTTS(text=clean_text, lang='en')
