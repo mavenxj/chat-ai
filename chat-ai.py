@@ -16,45 +16,51 @@ def main():
     GOOGLE_API_KEY = st.sidebar.text_input("Google API Key", type="password", key="K1")
     os.environ['GOOGLE_API_KEY'] = GOOGLE_API_KEY
 
+    col1, col2 = st.columns(2, gap="medium")
+
     with st.sidebar:
         st.info("Read more https://ai.google.dev/tutorials/swift_quickstart#set-up-api-key")
-        
-    col1, col2 = st.columns(2, gap="medium")
-    
+
     with col1:
         st.header("Query")
         if not os.getenv('GOOGLE_API_KEY', '').startswith("AI"):
             st.warning("Note: Enter your Google API key in the sidebar.")
         
-        # Initialize the GenAI
-        genai.configure(api_key=GOOGLE_API_KEY)
-        
-        question = st.text_input("Enter your query",key="K-text")
+        try:
+            # Initialize the GenAI
+            genai.configure(api_key=GOOGLE_API_KEY)
 
-        img = ""
-        image_url = st.text_input("Enter image URL",key="K-img")
+            question = st.text_input("Prompt", key="K-text")
 
-        #read image file
-        if image_url:
-            fd = urllib.urlopen(image_url)
-            image_file = io.BytesIO(fd.read())
-            img = PIL.Image.open(image_file)
-            st.image(image_url)
+            img = ""    
+            image_url = st.text_input("Image URL", key="K-img")
+
+            #read image file
+            if image_url:
+                fd = urllib.urlopen(image_url)
+                image_file = io.BytesIO(fd.read())
+                img = PIL.Image.open(image_file)
+                st.image(image_url)
+        except(Exception):
+            st.error("Invalid input!")
 
     with col2:
         st.header("Response")
         
+        try:
         # text generation
-        if img:
-            out1 = get_response_image(question, img)
-            # speech conversion
-            TTS(out1)
-            st.write(out1) 
-        elif not question == "":
-            out2 = get_response_text(question)
-            # speech conversion
-            TTS(out2)
-            st.write(out2)
+            if img:
+                out1 = get_response_image(question, img)
+                # speech conversion
+                TTS(out1)
+                st.write(out1) 
+            elif not question == "":
+                out2 = get_response_text(question)
+                # speech conversion
+                TTS(out2)
+                st.write(out2)
+        except(Exception):
+            st.error("Invalid input!")
 
 def get_response_image(query, image):
     model = genai.GenerativeModel('gemini-pro-vision')
@@ -74,8 +80,8 @@ def get_response_text(query):
 #text to speech
 def TTS(res):
     # remove special characters before speech conversion
-    spl_char = '[^a-zA-Z0-9%&$ \n\.]'
-    clean_text = re.sub(pattern=spl_char, repl="", string=res)
+    spl_char = '[^a-zA-Z0-9$@& \n\.]'
+    clean_text = re.sub(pattern=spl_char, repl=" ", string=res)
 
     tts = gTTS(text=clean_text, lang='en')
     filename = 'response.wav'
@@ -88,10 +94,18 @@ def TTS(res):
     try:
         audio_file = open(os.environ['AUDIO_KEY'], 'rb')
         audio_bytes = audio_file.read()
-        st.write("Listen to the text.")
+        v_spacer(height=1)
         st.audio(audio_bytes, format='audio/wav')
+        v_spacer(height=1)
     except(FileNotFoundError) :
         st.error("File not found")
+
+def v_spacer(height, sb=False) -> None:
+    for _ in range(height):
+        if sb:
+            st.sidebar.write('\n')
+        else:
+            st.write('\n')
 
 if __name__ == "__main__":
   main()
