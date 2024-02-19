@@ -16,8 +16,11 @@ def main():
     GOOGLE_API_KEY = st.sidebar.text_input("Google API Key", type="password", key="K1")
     os.environ['GOOGLE_API_KEY'] = GOOGLE_API_KEY
 
+    with st.sidebar:
+        st.info("Read more https://ai.google.dev/tutorials/swift_quickstart#set-up-api-key")
+        
     col1, col2 = st.columns(2, gap="medium")
-
+    
     with col1:
         st.header("Query")
         if not os.getenv('GOOGLE_API_KEY', '').startswith("AI"):
