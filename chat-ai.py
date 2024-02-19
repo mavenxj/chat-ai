@@ -25,11 +25,13 @@ def main():
         
         # Initialize the GenAI
         genai.configure(api_key=GOOGLE_API_KEY)
+        
+        st.write("Enter your query")
+        question = st.text_input(key="K-text")
 
-        question = st.text_input("Prompt", key="K-text")
-
-        img = ""    
-        image_url = st.text_input("Image URL", key="K-img")
+        img = ""
+        st.write("Enter image URL")
+        image_url = st.text_input(key="K-img")
 
         #read image file
         if image_url:
