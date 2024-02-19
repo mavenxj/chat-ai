@@ -85,6 +85,7 @@ def TTS(res):
     try:
         audio_file = open(os.environ['AUDIO_KEY'], 'rb')
         audio_bytes = audio_file.read()
+        st.write("Listen to the text.")
         st.audio(audio_bytes, format='audio/wav')
     except(FileNotFoundError) :
         st.error("File not found")
