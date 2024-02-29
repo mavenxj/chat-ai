@@ -5,3 +5,4 @@ pathlib
 gtts
 keyboard
 psutil
+gradio
