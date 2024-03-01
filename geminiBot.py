@@ -1,3 +1,4 @@
+# import libraries
 import os
 import time
 import uuid
@@ -6,8 +7,6 @@ from typing import List, Tuple, Optional, Dict, Union
 import google.generativeai as genai
 import gradio as gr
 from PIL import Image
-
-print("google-generativeai:", genai.__version__)
 
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
@@ -20,7 +19,7 @@ DES = """
 </div>
 """
 
-IMAGE_CACHE_DIRECTORY = "/figs"
+IMAGE_DIRECTORY = "/figs"
 IMAGE_WIDTH = 1024
 CHAT_HISTORY = List[Tuple[Optional[Union[Tuple[str], str]], Optional[str]]]
 
@@ -37,8 +36,8 @@ def preprocess_image(image: Image.Image) -> Optional[Image.Image]:
 # cache image
 def cache_pil_image(image: Image.Image) -> str:
     image_filename = f"{uuid.uuid4()}.jpeg"
-    os.makedirs(IMAGE_CACHE_DIRECTORY, exist_ok=True)
-    image_path = os.path.join(IMAGE_CACHE_DIRECTORY, image_filename)
+    os.makedirs(IMAGE_DIRECTORY, exist_ok=True)
+    image_path = os.path.join(IMAGE_DIRECTORY, image_filename)
     image.save(image_path, "JPEG")
     return image_path
 
@@ -58,6 +57,7 @@ def user(text_prompt: str, chatbot: CHAT_HISTORY):
         chatbot.append((text_prompt, None))
     return "", chatbot
 
+# chatbot
 def bot(
     google_key: str,
     files: Optional[List[str]],
@@ -67,10 +67,12 @@ def bot(
     top_k: int,
     top_p: float,
     chatbot: CHAT_HISTORY
-):
+    ):
+    
     if not google_key and not GOOGLE_API_KEY:
         raise ValueError("GOOGLE_API_KEY is not set.")
 
+    #configure Gemini model
     genai.configure(api_key=google_key if google_key else GOOGLE_API_KEY)
     generation_config = genai.types.GenerationConfig(
         temperature=temperature,
@@ -80,8 +82,11 @@ def bot(
         top_p=top_p
     )
 
+    # process user input
     text_prompt = [chatbot[-1][0]] if chatbot and chatbot[-1][0] and isinstance(chatbot[-1][0], str) else []
     image_prompt = [preprocess_image(Image.open(file).convert('RGB')) for file in files] if files else []
+
+    # get response
     model_name = 'gemini-pro-vision' if files else 'gemini-pro'
     model = genai.GenerativeModel(model_name)
     response = model.generate_content(text_prompt + image_prompt, stream=True, generation_config=generation_config)
@@ -115,6 +120,8 @@ upload_button_component = gr.UploadButton(
     label="Upload Images", file_count="multiple", file_types=["image"], scale=1
 )
 run_button_component = gr.Button(value="Run", variant="primary", scale=1)
+
+#Model Parameters
 temperature_component = gr.Slider(
     minimum=0,
     maximum=1.0,
@@ -184,7 +191,7 @@ with gr.Blocks() as demo:
             with gr.Accordion("Advanced", open=False):
                 top_k_component.render()
                 top_p_component.render()
-
+    # Run button
     run_button_component.click(
         fn=user,
         inputs=user_inputs,
@@ -193,7 +200,7 @@ with gr.Blocks() as demo:
     ).then(
         fn=bot, inputs=bot_inputs, outputs=[chatbot_component],
     )
-
+    #prompt
     text_prompt_component.submit(
         fn=user,
         inputs=user_inputs,
@@ -202,12 +209,13 @@ with gr.Blocks() as demo:
     ).then(
         fn=bot, inputs=bot_inputs, outputs=[chatbot_component],
     )
-
+    #upload button
     upload_button_component.upload(
         fn=upload,
         inputs=[upload_button_component, chatbot_component],
         outputs=[chatbot_component],
         queue=False
     )
-
+    
+# launch app
 demo.queue(max_size=99).launch(debug=False, show_error=True)
