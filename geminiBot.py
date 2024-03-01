@@ -19,7 +19,7 @@ DES = """
 </div>
 """
 
-IMAGE_DIRECTORY = "/figs"
+IMAGE_PATH = "/figs"
 IMAGE_WIDTH = 1024
 CHAT_HISTORY = List[Tuple[Optional[Union[Tuple[str], str]], Optional[str]]]
 
@@ -36,8 +36,8 @@ def preprocess_image(image: Image.Image) -> Optional[Image.Image]:
 # cache image
 def cache_pil_image(image: Image.Image) -> str:
     image_filename = f"{uuid.uuid4()}.jpeg"
-    os.makedirs(IMAGE_DIRECTORY, exist_ok=True)
-    image_path = os.path.join(IMAGE_DIRECTORY, image_filename)
+    os.makedirs(IMAGE_PATH, exist_ok=True)
+    image_path = os.path.join(IMAGE_PATH, image_filename)
     image.save(image_path, "JPEG")
     return image_path
 
